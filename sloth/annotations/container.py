@@ -21,6 +21,10 @@ try:
 except ImportError:
     pass
 try:
+    import moviepy.editor as mp
+except:
+    print "Unable to load moviepy for movie loading."
+try:
     import okapy
     import okapy.videoio as okv
     _use_pil = False
@@ -172,20 +176,24 @@ class AnnotationContainer:
             LOG.warn("Video file %s does not exist." % fullpath)
             return None
 
-        # get video source from cache or load from file
-        if fullpath in self._video_cache:
-            vidsrc = self._video_cache[fullpath]
-        else:
-            vidsrc = okv.createVideoSourceFromString(fullpath)
-            vidsrc = okv.toRandomAccessVideoSource(vidsrc)
-            self._video_cache[fullpath] = vidsrc
+        f = mp.VideoFileClip(fullpath)
+        return f.get_frame(frame_number/f.fps)
 
-        # get requested frame
-        if not vidsrc.getFrame(frame_number):
-            LOG.warn("Frame %d could not be loaded from video source %s" % (frame_number, fullpath))
-            return None
+        # # get video source from cache or load from file
+        # if fullpath in self._video_cache:
+        #     vidsrc = self._video_cache[fullpath]
+        # else:
+        #     vid_file = mp.VideoFileClip(fullpath)
+        #     vidsrc = okv.createVideoSourceFromString(fullpath)
+        #     vidsrc = okv.toRandomAccessVideoSource(vidsrc)
+        #     self._video_cache[fullpath] = vidsrc
 
-        return vidsrc.getImage()
+        # # get requested frame
+        # if not vidsrc.getFrame(frame_number):
+        #     LOG.warn("Frame %d could not be loaded from video source %s" % (frame_number, fullpath))
+        #     return None
+
+        # return vidsrc.getImage()
 
 
 class PickleContainer(AnnotationContainer):

@@ -1,0 +1,24 @@
+[
+    {
+        "class": "video",
+        "filename": "/Users/Alex/Desktop/Test/test.mp4",
+        "frames": [
+            {
+                "annotations": [
+                    {
+                        "class": "back_left",
+                        "xn": "891.0;919.0;970.0",
+                        "yn": "696.0;653.0;726.0"
+                    },
+                    {
+                        "class": "back_right",
+                        "xn": "786.0;837.0;784.0",
+                        "yn": "711.0;733.0;791.0"
+                    }
+                ],
+                "class": "frame",
+                "num": 500
+            }
+        ]
+    }
+]
