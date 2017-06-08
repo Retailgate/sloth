@@ -176,17 +176,17 @@ class AnnotationContainer:
             LOG.warn("Video file %s does not exist." % fullpath)
             return None
 
-        f = mp.VideoFileClip(fullpath)
-        return f.get_frame(frame_number/f.fps)
+        #f = mp.VideoFileClip(fullpath)
+        #return f.get_frame(frame_number/f.fps)
 
-        # # get video source from cache or load from file
-        # if fullpath in self._video_cache:
-        #     vidsrc = self._video_cache[fullpath]
-        # else:
-        #     vid_file = mp.VideoFileClip(fullpath)
+        # get video source from cache or load from file
+        if fullpath in self._video_cache:
+            vidsrc = self._video_cache[fullpath]
+        else:
+            vidsrc = mp.VideoFileClip(fullpath)
         #     vidsrc = okv.createVideoSourceFromString(fullpath)
         #     vidsrc = okv.toRandomAccessVideoSource(vidsrc)
-        #     self._video_cache[fullpath] = vidsrc
+            self._video_cache[fullpath] = vidsrc
 
         # # get requested frame
         # if not vidsrc.getFrame(frame_number):
@@ -194,6 +194,8 @@ class AnnotationContainer:
         #     return None
 
         # return vidsrc.getImage()
+        
+        return vidsrc.get_frame(frame_number/vidsrc.fps)
 
 
 class PickleContainer(AnnotationContainer):
