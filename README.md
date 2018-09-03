@@ -65,5 +65,7 @@ git clone https://github.com/mrnivlac/sloth.git
 cd sloth
 sudo python setup.py install
 
-
+if this doesn't work
+-------------
+sudo pip install okapi
 
