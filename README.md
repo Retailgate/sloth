@@ -53,17 +53,17 @@ Installing sloth
 
 sudo apt-get update <br>
 sudo apt-get -y upgrade <br>
-sudo apt-get install -y python-pip
-sudo pip install --upgrade pip
-sudo apt-get install -y git
-#sudo pip install PIL
-sudo apt-get install -y python-qt4
-sudo apt-get install -y ffmpeg
-sudo pip install moviepy
-cd Desktop
-git clone https://github.com/mrnivlac/sloth.git
-cd sloth
-sudo python setup.py install
+sudo apt-get install -y python-pip <br>
+sudo pip install --upgrade pip <br>
+sudo apt-get install -y git <br>
+#sudo pip install PIL <br>
+sudo apt-get install -y python-qt4 <br>
+sudo apt-get install -y ffmpeg <br>
+sudo pip install moviepy <br>
+cd Desktop <br>
+git clone https://github.com/Retailgate/sloth.git <br>
+cd sloth <br>
+sudo python setup.py install <br>
 
 if this doesn't work
 _____________________________
