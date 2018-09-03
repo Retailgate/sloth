@@ -51,9 +51,9 @@ Remove the USB and reboot
 Installing sloth
 -------------------
 
-sudo apt-get update\n
-sudo apt-get -y upgrade\n
-sudo apt-get install -y python-pip\n
+sudo apt-get update <br>
+sudo apt-get -y upgrade <br>
+sudo apt-get install -y python-pip
 sudo pip install --upgrade pip
 sudo apt-get install -y git
 #sudo pip install PIL
@@ -66,6 +66,6 @@ cd sloth
 sudo python setup.py install
 
 if this doesn't work
--------------
+_____________________________
 sudo pip install okapi
 
