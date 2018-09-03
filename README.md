@@ -51,9 +51,9 @@ Remove the USB and reboot
 Installing sloth
 -------------------
 
-sudo apt-get update
-sudo apt-get -y upgrade
-sudo apt-get install -y python-pip
+sudo apt-get update\n
+sudo apt-get -y upgrade\n
+sudo apt-get install -y python-pip\n
 sudo pip install --upgrade pip
 sudo apt-get install -y git
 #sudo pip install PIL
