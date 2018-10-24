@@ -47,10 +47,9 @@ $ git clone https://github.com/mrnivlac/sloth.git
 $ cd sloth
 $ sudo python setup.py install
 ```
-for installations
 
-Acer preinstallations - Ubuntu
-------------------------------
+
+### Acer preinstallations - Ubuntu
 
 After Installing Ubuntu on the laptop. Download rEFInd disc image, and create a bootable USB using Rufus
 rEFInd: https://sourceforge.net/projects/refind/ 
@@ -76,26 +75,4 @@ If the EFI files are not in fs0, you can check each location by using fsN: & ls
 This moves the ubuntu boot loader from 4th priority to 1st. This will set Ubuntu as the default OS.
 
 Remove the USB and reboot
-
-
-Installing sloth
--------------------
-
-sudo apt-get update <br>
-sudo apt-get -y upgrade <br>
-sudo apt-get install -y python-pip <br>
-sudo pip install --upgrade pip <br>
-sudo apt-get install -y git <br>
-#sudo pip install PIL <br>
-sudo apt-get install -y python-qt4 <br>
-sudo apt-get install -y ffmpeg <br>
-sudo pip install moviepy <br>
-cd Desktop <br>
-git clone https://github.com/Retailgate/sloth.git <br>
-cd sloth <br>
-sudo python setup.py install <br>
-
-if this doesn't work
-_____________________________
-sudo pip install okapi
 
