@@ -75,5 +75,8 @@ $ git clone https://github.com/mrnivlac/sloth.git
 $ cd sloth
 $ sudo python setup.py install
 ```
-# Using sloth in annotations
-
+# Using sloth for video annotations
+1. Create a file in the same directory as the video to be annotated and the corresponding json file.
+```
+$ touch journey.py
+```
