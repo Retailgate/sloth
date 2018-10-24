@@ -14,8 +14,11 @@ The documentation can be found at http://sloth.readthedocs.org/ .
 
 For a full list, visit https://github.com/cvhciKIT/sloth/releases
 
+# Installation
 
+## Prerequisites
 
+Python and PyQt4
 
 for installations
 
