@@ -502,3 +502,8 @@ CONTAINERS = (
     ('*.json',       'sloth.annotations.container.JsonContainer'),
 )
 ```
+3. To use this configuration, enter this into the command line:
+* where ```config.py``` is the configuration file you just created and ```anno.json``` is the annotation file. 
+```
+$ sloth --config config.py anno.json
+```
