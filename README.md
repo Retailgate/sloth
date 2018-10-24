@@ -78,5 +78,246 @@ $ sudo python setup.py install
 # Using sloth for video annotations
 1. Create a file in the same directory as the video to be annotated and the corresponding json file.
 ```
-$ touch journey.py
+$ touch sample.py
+```
+2. Open it and copy this into the file.
+```
+from PyQt4.QtGui import QPen
+from PyQt4.Qt import Qt
+from sloth.items import *
+import math
+
+class RectItem2(BaseItem):
+    defaultAutoTextKeys = ['id','area']
+    
+    def __init__(self, model_item=None, prefix="", parent=None):
+        BaseItem.__init__(self, model_item, prefix, parent)
+
+        self._id = 1
+	self._area = None
+        self._rect = None
+        self._resize = False
+        self._resize_start = None
+        self._resize_start_rect = None
+        self._upper_half_clicked = None
+        self._left_half_clicked = None
+
+        self._updateID(self._dataToID(self._model_item))
+	self._updateAREA(self._dataToAREA(self._model_item))
+        self._updateRect(self._dataToRect(self._model_item))
+        LOG.debug("Constructed rect %s for model item %s" %
+                  (self._rect, model_item))
+
+    def __call__(self, model_item=None, parent=None):
+        item = RectItem2(model_item, parent)
+        item.setPen(self.pen())
+        item.setBrush(self.brush())
+        return item
+
+    def _dataToID(self, model_item):
+        if model_item is None:
+            return 1
+
+        try:
+            return model_item[self.prefix() + 'id']
+
+        except KeyError as e:
+            LOG.debug("RectItem2: Could not find expected key in item: "
+                      + str(e) + ". Check your config!")
+            self.setValid(False)
+            return 1
+
+    def _dataToAREA(self, model_item):
+        if model_item is None:
+            return 1
+
+        try:
+            return model_item[self.prefix() + 'area']
+
+        except KeyError as e:
+            LOG.debug("RectItem2: Could not find expected key in item: "
+                      + str(e) + ". Check your config!")
+            self.setValid(False)
+            return 1	
+
+    def _dataToRect(self, model_item):
+        if model_item is None:
+            return QRectF()
+
+        try:
+            return QRectF(int(model_item[self.prefix() + 'x']),
+                          int(model_item[self.prefix() + 'y']),
+                          int(model_item[self.prefix() + 'width']),
+                          int(model_item[self.prefix() + 'height']))
+        except KeyError as e:
+            LOG.debug("RectItem2: Could not find expected key in item: "
+                      + str(e) + ". Check your config!")
+            self.setValid(False)
+            return QRectF()
+
+    def _updateID(self, ID):
+        if ID == self._id:
+            return
+
+        self._id = ID
+
+    def _updateAREA(self, AREA):
+        if AREA == self._area:
+            return
+
+        self.area = AREA
+
+    def _updateRect(self, rect):
+        if rect == self._rect:
+            return
+
+        self.prepareGeometryChange()
+        self._rect = rect
+        self.setPos(rect.topLeft())
+
+    def updateModel(self):
+        self._rect = QRectF(self.scenePos(), self._rect.size())
+        self._model_item.update({
+            self.prefix() + 'x':      float(self._rect.topLeft().x()),
+            self.prefix() + 'y':      float(self._rect.topLeft().y()),
+            self.prefix() + 'width':  float(self._rect.width()),
+            self.prefix() + 'height': float(self._rect.height()),	    
+        })
+
+    def boundingRect(self):
+        return QRectF(QPointF(0, 0), self._rect.size())
+
+    def paint(self, painter, option, widget=None):
+        BaseItem.paint(self, painter, option, widget)
+
+        pen = self.pen()
+        if self.isSelected():
+            pen.setStyle(Qt.DashLine)
+        painter.setPen(pen)
+        painter.drawRect(self.boundingRect())
+
+    def dataChange(self):
+        rect = self._dataToRect(self._model_item)
+        self._updateRect(rect)
+
+    def mousePressEvent(self, event):
+        if event.button() & Qt.RightButton != 0:
+            self._resize = True
+            self._resize_start = event.scenePos()
+            self._resize_start_rect = QRectF(self._rect)
+            self._upper_half_clicked = (event.scenePos().y() < self._resize_start_rect.center().y())
+            self._left_half_clicked  = (event.scenePos().x() < self._resize_start_rect.center().x())
+            event.accept()
+        else:
+            BaseItem.mousePressEvent(self, event)
+
+    def mouseMoveEvent(self, event):
+        if self._resize:
+            diff = event.scenePos() - self._resize_start
+            if self._left_half_clicked:
+                x = self._resize_start_rect.x() + math.floor(diff.x())
+                w = self._resize_start_rect.width() - math.floor(diff.x())
+            else:
+                x = self._resize_start_rect.x()
+                w = self._resize_start_rect.width() + math.floor(diff.x())
+
+            if self._upper_half_clicked:
+                y = self._resize_start_rect.y() + math.floor(diff.y())
+                h = self._resize_start_rect.height() - math.floor(diff.y())
+            else:
+                y = self._resize_start_rect.y()
+                h = self._resize_start_rect.height() + math.floor(diff.y())
+
+            rect = QRectF(QPointF(x,y), QSizeF(w, h)).normalized()
+
+            self._updateRect(rect)
+            self.updateModel()
+            event.accept()
+        else:
+            BaseItem.mouseMoveEvent(self, event)
+
+    def mouseReleaseEvent(self, event):
+        if self._resize:
+            self._resize = False
+            event.accept()
+        else:
+            BaseItem.mouseReleaseEvent(self, event)
+
+    def keyPressEvent(self, event):
+        BaseItem.keyPressEvent(self, event)
+        step = 1
+        if event.modifiers() & Qt.ShiftModifier:
+            step = 5
+        ds = {Qt.Key_Left:  (-step, 0),
+              Qt.Key_Right: (step, 0),
+              Qt.Key_Up:    (0, -step),
+              Qt.Key_Down:  (0, step),
+             }.get(event.key(), None)
+        ds2 = {Qt.Key_Left:  (-1),
+              Qt.Key_Right: (1),
+              Qt.Key_Up:    (2),
+              Qt.Key_Down:  (-2),
+             }.get(event.key(), None)
+
+        if ds is not None:
+            if event.modifiers() & Qt.AltModifier:
+                ID = self._id + ds2
+                self._updateID(ID)
+            else:
+                if event.modifiers() & Qt.ControlModifier:
+                    rect = self._rect.adjusted(*((0, 0) + ds))
+                else:
+                    rect = self._rect.adjusted(*(ds + ds))
+                self._updateRect(rect)
+            self.updateModel()
+            event.accept()
+
+	if ds is not None:
+            if event.modifiers() & Qt.AltModifier:
+                AREA = self._area + ds2
+                self._updateAREA(AREA)
+            else:
+                if event.modifiers() & Qt.ControlModifier:
+                    rect = self._rect.adjusted(*((0, 0) + ds))
+                else:
+                    rect = self._rect.adjusted(*(ds + ds))
+                self._updateRect(rect)
+            self.updateModel()
+            event.accept()
+
+LABELS = (
+    {
+        'attributes': {
+            'class': 'rect',
+	    'area': ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23'],
+            'id':           ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79','80','81','82','83','84','85','86','87','88','89','90','91','92','93','94','95','96','97','98','99','100']
+	    
+        },
+        'inserter':  'sloth.items.RectItemInserter',
+        'item':     RectItem2,
+        'hotkey':   'r',
+        'text':     'Rectangle',
+    },
+)
+
+HOTKEYS = (
+    ('Space',     [lambda lt: lt.currentImage().confirmAll(),
+                   lambda lt: lt.currentImage().setUnlabeled(False),
+                   lambda lt: lt.gotoNext()
+                  ],                                         'Mark image as labeled/confirmed and go to next'),
+    ('Backspace', lambda lt: lt.gotoPrevious(),              'Previous image/frame'),
+    ('PgDown',    lambda lt: lt.gotoNext(),                  'Next image/frame'),
+    ('PgUp',      lambda lt: lt.gotoPrevious(),              'Previous image/frame'),
+    ('Tab',       lambda lt: lt.selectNextAnnotation(),      'Select next annotation'),
+    ('Shift+Tab', lambda lt: lt.selectPreviousAnnotation(),  'Select previous annotation'),
+    ('Ctrl+f',    lambda lt: lt.view().fitInView(),          'Fit current image/frame into window'),
+    ('Del',       lambda lt: lt.deleteSelectedAnnotations(), 'Delete selected annotations'),
+    ('ESC',       lambda lt: lt.exitInsertMode(),            'Exit insert mode'),
+    ('Shift+l',   lambda lt: lt.currentImage().setUnlabeled(False), 'Mark current image as labeled'),
+    ('Shift+c',   lambda lt: lt.currentImage().confirmAll(), 'Mark all annotations in image as confirmed'),
+)
+
+CONTAINERS = (
+    ('*.json',       'sloth.annotations.container.JsonContainer'),
+)
 ```
