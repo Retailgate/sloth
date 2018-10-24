@@ -347,7 +347,7 @@ $ sloth --config config.py anno.json
 ```
 
 # Using sloth for mapping areas
-1. 1. Create a file in the same directory as the pictures to be annotated and the corresponding json file.
+1. Create a file in the same directory as the pictures to be annotated and the corresponding json file.
 ```
 $ touch comfig.py
 ```
