@@ -345,3 +345,5 @@ LABELS = (
 ```
 $ sloth --config config.py anno.json
 ```
+
+# Using sloth for mapping areas
