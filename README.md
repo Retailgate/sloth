@@ -347,3 +347,158 @@ $ sloth --config config.py anno.json
 ```
 
 # Using sloth for mapping areas
+1. 1. Create a file in the same directory as the pictures to be annotated and the corresponding json file.
+```
+$ touch comfig.py
+```
+2. Open it and copy this into the file.
+```
+from PyQt4.QtGui import QPen
+from PyQt4.Qt import Qt
+from sloth.items import *
+import math
+
+class PolygonItem2(BaseItem):
+    defaultAutoTextKeys = ['area']
+
+    def __init__(self, model_item=None, prefix="", parent=None):
+	BaseItem.__init__(self, model_item, prefix, parent)
+
+	# Make it non-movable for now
+	self._area = None
+	self.setFlags(QGraphicsItem.ItemIsSelectable |
+	              QGraphicsItem.ItemSendsGeometryChanges |
+	              QGraphicsItem.ItemSendsScenePositionChanges)
+	self._polygon = None
+
+	self._updateAREA(self._dataToAREA(self._model_item))
+	self._updatePolygon(self._dataToPolygon(self._model_item))
+	LOG.debug("Constructed polygon %s for model item %s" %
+	          (self._polygon, model_item))
+
+    def __call__(self, model_item=None, parent=None):
+        item = PolygonItem2(model_item, parent)
+        item.setPen(self.pen())
+        item.setBrush(self.brush())
+        return item
+
+    def _dataToAREA(self, model_item):
+        if model_item is None:
+            return 1
+
+        try:
+            return model_item[self.prefix() + 'area']
+
+        except KeyError as e:
+            LOG.debug("PolygonItem2: Could not find expected key in item: "
+                      + str(e) + ". Check your config!")
+            self.setValid(False)
+            return 1
+
+    def _dataToPolygon(self, model_item):
+        if model_item is None:
+            return QPolygonF()
+
+        try:
+            polygon = QPolygonF()
+            xn = [float(x) for x in model_item["xn"].split(";")]
+            yn = [float(y) for y in model_item["yn"].split(";")]
+            for x, y in zip(xn, yn):
+              polygon.append(QPointF(x, y))
+
+            return polygon
+
+        except KeyError as e:
+            LOG.debug("PolygonItem2: Could not find expected key in item: "
+                      + str(e) + ". Check your config!")
+            self.setValid(False)
+            return QPolygonF()
+
+    def _updateAREA(self, AREA):
+        if AREA == self._area:
+            return
+
+        self.area = AREA
+
+    def _updatePolygon(self, polygon):
+        if polygon == self._polygon:
+            return
+
+        self.prepareGeometryChange()
+        self._polygon = polygon
+
+        xn = [p.x() for p in self._polygon]
+        yn = [p.y() for p in self._polygon]
+        xmin = min(xn)
+        xmax = max(xn)
+        ymin = min(yn)
+        ymax = max(yn)
+
+        self.setPos(QPointF(xmin + (xmax - xmin)/2, ymin + (ymax - ymin)/2))
+
+    def paint(self, painter, option, widget=None):
+        BaseItem.paint(self, painter, option, widget)
+
+        pen = self.pen()
+        if self.isSelected():
+            pen.setStyle(Qt.DashLine)
+        painter.setPen(pen)
+
+        xn = [p.x() for p in self._polygon]
+        yn = [p.y() for p in self._polygon]
+        xmin = min(xn)
+        xmax = max(xn)
+        ymin = min(yn)
+        ymax = max(yn)
+
+        for k in range(-1, len(self._polygon)-1):
+            p1 = self._polygon[k]
+            p2 = self._polygon[k+1]
+            painter.drawLine(p1-QPointF(xmin + (xmax - xmin)/2, ymin + (ymax - ymin)/2), p2-QPointF(xmin + (xmax - xmin)/2, ymin + (ymax - ymin)/2))
+
+    def dataChange(self):
+        polygon = self._dataToPolygon(self._model_item)
+        self._updatePolygon(polygon)
+
+    def mouseReleaseEvent(self, event):
+        if self._resize:
+            self._resize = False
+            event.accept()
+        else:
+            QGraphicsScene.mouseReleaseEvent(self, event)
+
+    def mouseMoveEvent(self, event):
+        QGraphicsScene.mouseMoveEvent(self, event)
+
+
+LABELS = (
+    {"attributes": {
+     "class": "area",
+     'area': ['1','2','3','4','5']},
+     "item":     PolygonItem2,
+     "inserter": "sloth.items.PolygonItemInserter",
+     "text":     "Area"
+    },
+)
+
+HOTKEYS = (
+    ('Space',     [lambda lt: lt.currentImage().confirmAll(),
+                   lambda lt: lt.currentImage().setUnlabeled(False),
+                   lambda lt: lt.gotoNext()
+                  ],                                         'Mark image as labeled/confirmed and go to next'),
+    ('Backspace', lambda lt: lt.gotoPrevious(),              'Previous image/frame'),
+    ('PgDown',    lambda lt: lt.gotoNext(),                  'Next image/frame'),
+    ('PgUp',      lambda lt: lt.gotoPrevious(),              'Previous image/frame'),
+    ('Tab',       lambda lt: lt.selectNextAnnotation(),      'Select next annotation'),
+    ('Shift+Tab', lambda lt: lt.selectPreviousAnnotation(),  'Select previous annotation'),
+    ('Ctrl+f',    lambda lt: lt.view().fitInView(),          'Fit current image/frame into window'),
+    ('Del',       lambda lt: lt.deleteSelectedAnnotations(), 'Delete selected annotations'),
+    ('ESC',       lambda lt: lt.exitInsertMode(),            'Exit insert mode'),
+    ('Shift+l',   lambda lt: lt.currentImage().setUnlabeled(False), 'Mark current image as labeled'),
+    ('Shift+c',   lambda lt: lt.currentImage().confirmAll(), 'Mark all annotations in image as confirmed'),
+)
+
+CONTAINERS = (
+    ('*.json',       'sloth.annotations.container.JsonContainer'),
+)
+```
