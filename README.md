@@ -78,7 +78,7 @@ $ sudo python setup.py install
 # Using sloth for video annotations
 1. Create a file in the same directory as the video to be annotated and the corresponding json file.
 ```
-$ touch sample.py
+$ touch comfig.py
 ```
 2. Open it and copy this into the file.
 ```
@@ -339,4 +339,9 @@ LABELS = (
         'text':     'Rectangle',
     },
 )
+```
+3. To use this configuration, enter this into the command line:
+* where ```config.py``` is the configuration file you just created and ```anno.json``` is the annotation file. 
+```
+$ sloth --config config.py anno.json
 ```
