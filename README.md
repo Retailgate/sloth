@@ -16,9 +16,13 @@ For a full list, visit https://github.com/cvhciKIT/sloth/releases
 
 # Installation
 
-## Prerequisites
-
-Python and PyQt4
+### Prerequisites
+1. pip
+```
+$ sudo apt-get update
+$ sudo apt-get -y upgrade
+$ sudo apt-get install -y python-pip
+```
 
 for installations
 
