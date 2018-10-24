@@ -44,7 +44,7 @@ This moves the ubuntu boot loader from 4th priority to 1st. This will set Ubuntu
 
 Remove the USB and reboot
 
-### Prerequisites
+### sloth prerequisites (on Ubuntu)
 1. pip
 ```
 $ sudo apt-get update
