@@ -63,15 +63,17 @@ Upon restarting, you should be able to see the rEFInd boot loader screen.
 
 
 Select rEFInd’s UEFI Shell, type the following:
-
-	bcfg boot dump
-		This prints a list of all available boot drivers. Ubuntu will not be here, yet.
+```
+bcfg boot dump
+```
+This prints a list of all available boot drivers. Ubuntu will not be here, yet.
 
 bcfg boot add X fs0:\EFI\ubuntu\shimx64.efi "ubuntu"
 Replace X with the next available number as shown on the list. It’s usually 3 for Acer Aspire Laptops.
 If the EFI files are not in fs0, you can check each location by using fsN: & ls 
-
-		bcfg boot mv 3 0
+```
+bcfg boot mv 3 0
+```
 This moves the ubuntu boot loader from 4th priority to 1st. This will set Ubuntu as the default OS.
 
 Remove the USB and reboot
