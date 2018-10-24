@@ -321,4 +321,4 @@ CONTAINERS = (
     ('*.json',       'sloth.annotations.container.JsonContainer'),
 )
 ```
-* To annotate more than one label, edit the variable named LABELS.
+* To annotate more than one label, edit the variable named LABELS and add a key under the 'attributes' key named 'type'.
