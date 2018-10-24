@@ -321,4 +321,22 @@ CONTAINERS = (
     ('*.json',       'sloth.annotations.container.JsonContainer'),
 )
 ```
-* To annotate more than one label, edit the variable named LABELS and add a key under the 'attributes' key named 'type'. Then, add what label names you need.
+* To annotate more than one label, edit the variable named LABELS and add a key under the 'attributes' key and name it 'type'. Then, add what label names you need.
+For example:
+```
+LABELS = (
+    {
+        'attributes': {
+            'class': 'rect',
+	    'type': ['car','van','motor'],
+	    'area': ['1','2','3','4','5'],
+            'id':   ['1','2','3','4','5']
+	    
+        },
+        'inserter':  'sloth.items.RectItemInserter',
+        'item':     RectItem2,
+        'hotkey':   'r',
+        'text':     'Rectangle',
+    },
+)
+```
