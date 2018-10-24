@@ -22,8 +22,24 @@ For a full list, visit https://github.com/cvhciKIT/sloth/releases
 $ sudo apt-get update
 $ sudo apt-get -y upgrade
 $ sudo apt-get install -y python-pip
+$ sudo pip install --upgrade pip
 ```
-
+2. git
+```
+$ sudo apt-get install -y git
+```
+3. PyQt4
+```
+$ sudo apt-get install -y python-qt4
+```
+4. ffmpeg
+```
+$ sudo apt-get install -y ffmpeg
+```
+5. moviepy
+```
+$ sudo apt-get install -y moviepy
+```
 for installations
 
 Acer preinstallations - Ubuntu
