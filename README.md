@@ -75,5 +75,5 @@ $ git clone https://github.com/mrnivlac/sloth.git
 $ cd sloth
 $ sudo python setup.py install
 ```
-
+# Using sloth in annotations
 
