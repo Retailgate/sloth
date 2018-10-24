@@ -1,5 +1,6 @@
-sloth
-=====
+# sloth
+
+## Intro
 
 [![Build Status](https://travis-ci.org/cvhciKIT/sloth.svg)](https://travis-ci.org/cvhciKIT/sloth)
 
