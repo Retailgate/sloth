@@ -40,6 +40,13 @@ $ sudo apt-get install -y ffmpeg
 ```
 $ sudo apt-get install -y moviepy
 ```
+6. sloth
+```
+$ cd ~/Desktop
+$ git clone https://github.com/mrnivlac/sloth.git
+$ cd sloth
+$ sudo python setup.py install
+```
 for installations
 
 Acer preinstallations - Ubuntu
